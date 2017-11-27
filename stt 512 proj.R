@@ -5,7 +5,7 @@ dat$`Ship Name` = as.factor(dat$`Ship Name`); dat$Brand = as.factor(dat$Brand)
 head(dat, n = 1)
 mod = lm(Passengers~ Brand + Age + Tonnage + Length + Density + Crew, data = dat)
 summary(mod)
-
+anova(mod)
 #####Simple Linear Model#####
 mod1 = lm(Passengers ~ Tonnage, data = dat)
 summary(mod1)
@@ -29,7 +29,7 @@ y = dat$Passengers
 b = solve(t(x) %*% x) %*% t(x) %*% y
 yhat = x %*% b
 H = x %*% solve(t(x) %*% x) %*% t(x)
-solve(t(x) %*% x) %*% t(x) #checking if H is idempotent
+all(round(H %*% H,2) == round(H,2)) #checking if H is idempotent
 #finding different sum squares
 sst = t(y) %*% (diag(1,dim(dat)[1],) - 1/dim(dat)[1]) %*% y;sst
 sse = t(y) %*% (diag(1,dim(dat)[1],) - H) %*% y;sse
@@ -55,7 +55,7 @@ for(x in 2:length(brandscoord)){
 colnames(brands) = levels(dat$Brand)
 brands[,1] = rep(0, dim(dat)[1])
 x = as.matrix(cbind(rep(1,dim(dat)[1]), brands, dat$Age, dat$Tonnage, dat$Length, dat$Density, dat$Crew))
-x = x[,-2]          
+x = x[,-2]
 y = dat$Passengers
 
 b = solve(t(x) %*% x) %*% t(x) %*% y
@@ -94,3 +94,4 @@ anova(mod3)
 #find vif
 library("car")
 vif(mod3)
+vif(mod2)
