@@ -34,8 +34,20 @@ all(round(H %*% H,2) == round(H,2)) #checking if H is idempotent
 sst = t(y) %*% (diag(1,dim(dat)[1],) - 1/dim(dat)[1]) %*% y;sst
 sse = t(y) %*% (diag(1,dim(dat)[1],) - H) %*% y;sse
 ssr = t(y) %*% (H - 1/dim(dat)[1]) %*% y;ssr
-mse = sse / (dim(dat)[1] - 2)
+mse = sse / (dim(dat)[1] - length(b))
 s2b = as.numeric(mse) * solve(t(x) %*% x); s2b
+
+#finding E(Yh) and E(Ynew)
+#let's look at a ship with a Tonnage of 100
+syh = sqrt(mse * (1/dim(dat)[1] + ((100 - mean(x))^2)/sum((x - mean(x))^2)))
+eyh = b[1] + 100*b[2]
+#confidence interval
+eyh - qt(.975,length(x) - length(b)) * syh; eyh + qt(.975,length(x) - length(b)) * syh
+
+#Predicting the passenger value for a ship with Tonnage of 100
+syn = sqrt(mse + syh^2)
+eyn = eyh
+eyn - qt(.975,length(x) - length(b)) * syn; eyn + qt(.975,length(x) - length(b)) * syn
 
 #####Now with Multiple Regression Models#####
 mod2 = lm(Passengers~ Brand + Age + Tonnage + Length + Density + Crew, data = dat)
